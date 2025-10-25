@@ -1,0 +1,35 @@
+﻿version: '3.8'
+
+services:
+  rag-system:
+    build: .
+    container_name: complete-rag
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./documents:/app/documents
+      - ./chroma_db:/app/chroma_db
+      - ./chat_history:/app/chat_history
+      - ./exports:/app/exports
+      - ./persistent_memory:/app/persistent_memory
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - rag-network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - rag-network
+
+volumes:
+  ollama-data:
+
+networks:
+  rag-network:
+    driver: bridge
